@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <limits.h>
 
 void print_int_array(const int a[], int size)
 {
@@ -158,13 +159,66 @@ int find_k_th_element(int a[], int a_size, int b[], int b_size, int k)
 	return k_th;
 }
 
+struct TreeNode{
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
 
+void build_tree(TreeNode** node, int output[], int min, int max)
+{
+    if(min > max) return;
+    
+    int middle = min + (max - min)/2;
+    TreeNode* t = new TreeNode(output[middle]);
+    *node = t;
+    build_tree(&t->left, output, min, middle);
+    build_tree(&t->right, output, middle, max);
+}
+
+TreeNode* reconstruct_binary_tree(int output[], int size)
+{
+
+    TreeNode* root = NULL;
+    build_tree(&root, output, 0, size-1);
+
+    return root;
+}
+
+bool isValid(TreeNode *node, int min, int max)
+{
+    if(node == NULL) return true;
+
+    printf("%d\n", node->val);
+    
+    return (node->val > min) 
+                && (node->val < max)
+                    && isValid(node->left, min, node->val)
+                        && isValid(node->right, node->val, max);
+}
+
+bool isValidBST(TreeNode *root) 
+{
+    if(root == NULL) return true;
+    
+    return isValid(root, INT_MIN, INT_MAX);
+}
 
 int main()
 {
 	printf("Hello World!\n");
 
-	test_remove_dups_from_sorted_array();
+	//test_remove_dups_from_sorted_array();
+
+	TreeNode a = TreeNode(1);
+
+	TreeNode b = TreeNode(1);
+
+	a.right = &b;
+
+	printf("BST(%s)\n", isValidBST(&a)?"true":"false");
+
 
 	return 0;
 }
